@@ -1,0 +1,4 @@
+github.com/clbanning/mxj v0.0.0-20160728125224-98670cb0225a h1:WXaT3em/fcYhjOTWu+EUgBoS/RBrSbuMwHVGHwY67I0=
+github.com/clbanning/mxj v0.0.0-20160728125224-98670cb0225a/go.mod h1:BVjHeAH+rl9rs6f+QIpeRl0tfu10SXn1pUSa5PVGJng=
+github.com/fatih/structs v0.0.0-20160807235529-dc3312cb1a45 h1:SmGLF6DwUks6Rhs/aehI/q5S47HQpC/fE9TtQjunurs=
+github.com/fatih/structs v0.0.0-20160807235529-dc3312cb1a45/go.mod h1:9NiDSp5zOcgEDl+j00MP/WkGVPOlPRLejGD8Ga6PJ7M=
