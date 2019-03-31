@@ -1,8 +1,8 @@
 package main
 
 import (
+	"wechat/wx"
 	"fmt"
-	"github.com/leeeboo/wechat/wx"
 	"log"
 	"net/http"
 	"time"
@@ -28,7 +28,7 @@ func get(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(client.Query.Echostr))
 		return
 	}
-
+	
 	w.WriteHeader(403)
 	return
 }
