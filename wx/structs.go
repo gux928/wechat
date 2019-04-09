@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+//Base 基础微信消息结构
 type Base struct {
 	FromUserName CDATAText
 	ToUserName   CDATAText
@@ -13,6 +14,7 @@ type Base struct {
 	CreateTime   CDATAText
 }
 
+//InitBaseData 初始化基础消息
 func (b *Base) InitBaseData(w *WeixinClient, msgtype string) {
 
 	b.FromUserName = value2CDATA(w.Message["ToUserName"].(string))
@@ -21,10 +23,12 @@ func (b *Base) InitBaseData(w *WeixinClient, msgtype string) {
 	b.MsgType = value2CDATA(msgtype)
 }
 
+//CDATAText 微信自定义消息类型
 type CDATAText struct {
 	Text string `xml:",innerxml"`
 }
 
+//TextMessage 文本消息结构
 type TextMessage struct {
 	XMLName xml.Name `xml:"xml"`
 	Base

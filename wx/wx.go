@@ -22,6 +22,7 @@ type weixinQuery struct {
 	Echostr      string `json:"echostr"`
 }
 
+//WeixinClient 微信端消息及回复
 type WeixinClient struct {
 	Token          string
 	Query          weixinQuery
@@ -31,6 +32,7 @@ type WeixinClient struct {
 	Methods        map[string]func() bool
 }
 
+//NewClient 初始化微信消息
 func NewClient(r *http.Request, w http.ResponseWriter, token string) (*WeixinClient, error) {
 
 	weixinClient := new(WeixinClient)
@@ -42,29 +44,29 @@ func NewClient(r *http.Request, w http.ResponseWriter, token string) (*WeixinCli
 	weixinClient.initWeixinQuery()
 
 	if weixinClient.Query.Signature != weixinClient.signature() {
-		return nil, errors.New("Invalid Signature.")
+		return nil, fmt.Errorf("Invalid Signature")
 	}
 
 	return weixinClient, nil
 }
 
-func (this *WeixinClient) initWeixinQuery() {
+func (thisClient *WeixinClient) initWeixinQuery() {
 
 	var q weixinQuery
 
-	q.Nonce = this.Request.URL.Query().Get("nonce")
-	q.Echostr = this.Request.URL.Query().Get("echostr")
-	q.Signature = this.Request.URL.Query().Get("signature")
-	q.Timestamp = this.Request.URL.Query().Get("timestamp")
-	q.EncryptType = this.Request.URL.Query().Get("encrypt_type")
-	q.MsgSignature = this.Request.URL.Query().Get("msg_signature")
+	q.Nonce = thisClient.Request.URL.Query().Get("nonce")
+	q.Echostr = thisClient.Request.URL.Query().Get("echostr")
+	q.Signature = thisClient.Request.URL.Query().Get("signature")
+	q.Timestamp = thisClient.Request.URL.Query().Get("timestamp")
+	q.EncryptType = thisClient.Request.URL.Query().Get("encrypt_type")
+	q.MsgSignature = thisClient.Request.URL.Query().Get("msg_signature")
 
-	this.Query = q
+	thisClient.Query = q
 }
 
-func (this *WeixinClient) signature() string {
+func (thisClient *WeixinClient) signature() string {
 
-	strs := sort.StringSlice{this.Token, this.Query.Timestamp, this.Query.Nonce}
+	strs := sort.StringSlice{thisClient.Token, thisClient.Query.Timestamp, thisClient.Query.Nonce}
 	sort.Strings(strs)
 	str := ""
 	for _, s := range strs {
@@ -75,9 +77,9 @@ func (this *WeixinClient) signature() string {
 	return fmt.Sprintf("%x", h.Sum(nil))
 }
 
-func (this *WeixinClient) initMessage() error {
+func (thisClient *WeixinClient) initMessage() error {
 
-	body, err := ioutil.ReadAll(this.Request.Body)
+	body, err := ioutil.ReadAll(thisClient.Request.Body)
 
 	if err != nil {
 		return err
@@ -90,25 +92,25 @@ func (this *WeixinClient) initMessage() error {
 	}
 
 	if _, ok := m["xml"]; !ok {
-		return errors.New("Invalid Message.")
+		return errors.New("invalid Message")
 	}
 
 	message, ok := m["xml"].(map[string]interface{})
 
 	if !ok {
-		return errors.New("Invalid Field `xml` Type.")
+		return errors.New("invalid Field `xml` Type")
 	}
 
-	this.Message = message
+	thisClient.Message = message
 
-	log.Println(this.Message)
+	log.Println(thisClient.Message)
 
 	return nil
 }
 
-func (this *WeixinClient) text() {
+func (thisClient *WeixinClient) text() {
 
-	inMsg, ok := this.Message["Content"].(string)
+	inMsg, ok := thisClient.Message["Content"].(string)
 
 	if !ok {
 		return
@@ -116,42 +118,43 @@ func (this *WeixinClient) text() {
 
 	var reply TextMessage
 
-	reply.InitBaseData(this, "text")
+	reply.InitBaseData(thisClient, "text")
 	reply.Content = value2CDATA(fmt.Sprintf("我收到的是：%s", inMsg))
 
-	replyXml, err := xml.Marshal(reply)
+	replyXML, err := xml.Marshal(reply)
 
 	if err != nil {
 		log.Println(err)
-		this.ResponseWriter.WriteHeader(403)
+		thisClient.ResponseWriter.WriteHeader(403)
 		return
 	}
 
-	this.ResponseWriter.Header().Set("Content-Type", "text/xml")
-	this.ResponseWriter.Write(replyXml)
+	thisClient.ResponseWriter.Header().Set("Content-Type", "text/xml")
+	thisClient.ResponseWriter.Write(replyXML)
 }
 
-func (this *WeixinClient) Run() {
+//Run 不知道干啥的
+func (thisClient *WeixinClient) Run() {
 
-	err := this.initMessage()
+	err := thisClient.initMessage()
 
 	if err != nil {
 
 		log.Println(err)
-		this.ResponseWriter.WriteHeader(403)
+		thisClient.ResponseWriter.WriteHeader(403)
 		return
 	}
 
-	MsgType, ok := this.Message["MsgType"].(string)
+	MsgType, ok := thisClient.Message["MsgType"].(string)
 
 	if !ok {
-		this.ResponseWriter.WriteHeader(403)
+		thisClient.ResponseWriter.WriteHeader(403)
 		return
 	}
 
 	switch MsgType {
 	case "text":
-		this.text()
+		thisClient.text()
 		break
 	default:
 		break
