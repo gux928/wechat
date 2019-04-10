@@ -1,11 +1,11 @@
 package main
 
 import (
-	"wechat/wx"
 	"fmt"
 	"log"
 	"net/http"
 	"time"
+	"wechat/wx"
 )
 
 const (
@@ -25,10 +25,10 @@ func get(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(client.Query.Echostr) > 0 {
-		w.Write([]byte(client.Query.Echostr))
+		_, _ = w.Write([]byte(client.Query.Echostr))
 		return
 	}
-	
+
 	w.WriteHeader(403)
 	return
 }

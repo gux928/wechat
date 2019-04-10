@@ -43,6 +43,6 @@ func (*httpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	go writeLog(r, t, "unmatch", "")
 
-	io.WriteString(w, "")
+	_, _ = io.WriteString(w, "")
 	return
 }
