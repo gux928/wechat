@@ -7,6 +7,7 @@ import (
 	"time"
 )
 
+//WebController 路由控制器
 type WebController struct {
 	Function func(http.ResponseWriter, *http.Request)
 	Method   string
